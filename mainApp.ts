@@ -1,6 +1,6 @@
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
-import user from "./router/userRouter";
+import user from "./router/amidatRouter";
 import { HTTP } from "./Error/mainError";
 import morgan from "morgan";
 import helmet from "helmet";

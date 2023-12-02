@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
-const mongooseString: string = process.env.TWOSTEPAUTH_DB!;
+// const mongooseString: string = process.env.TWOSTEPAUTH_DB!;
+const mongooseString: string = "mongodb://localhost:27017/amidat";
 
 export const dbConnect = () => {
   try {

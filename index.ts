@@ -4,12 +4,13 @@ import env from "dotenv";
 import { mainApp } from "./mainApp";
 env.config();
 
-const port = parseInt(process.env.PORT!);
+// const port = parseInt(process.env.PORT!);
+const port = 1234;
 const app: Application = express();
 
 mainApp(app);
 
-const server = app.listen(process.env.PORT || port, () => {
+const server = app.listen(port, () => {
   console.log();
   dbConnect();
   console.log(port)
