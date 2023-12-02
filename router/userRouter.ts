@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { deleteUser, registerUser, signInUser, verifyUser, viewAllUser, viewOneUser } from "../controller/amidatController";
+import { deleteUser, registerUser, signInUser, verifyUser, viewAllUser, viewOneUser } from "../controller/userController";
 
 const router = Router();
 
