@@ -4,16 +4,13 @@ import env from "dotenv";
 import { mainApp } from "./mainApp";
 env.config();
 
-// const port = parseInt(process.env.PORT!);
-const port = 1234;
+const port = parseInt(process.env.PORT!);
 const app: Application = express();
 
 mainApp(app);
 
-const server = app.listen(port, () => {
-  console.log();
+const server = app.listen(process.env.PORT! || port, () => {
   dbConnect();
-  console.log(port)
 }); 
 process.on("uncaughtException", (error: Error) => {
   console.log("Error due to uncaughtException", error.message);
