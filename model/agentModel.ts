@@ -1,8 +1,8 @@
-import {  Schema, model } from "mongoose";
-import { iUserData } from "../config/interfaces";
+import { Schema, model } from "mongoose";
+import { iAgentData } from "../config/interfaces";
 
 
-const userModel = new Schema<iUserData>(
+const agentModel = new Schema<iAgentData>(
   {
     name: {
       type: String,
@@ -31,4 +31,4 @@ const userModel = new Schema<iUserData>(
   }
 );
 
-export default model<iUserData>("users",userModel)
+export default model<iAgentData>("agents", agentModel);

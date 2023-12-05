@@ -22,19 +22,17 @@ export const registerUser = async (
       token: value,
     });
 
-    const token = jwt.sign({ id: user._id }, "token");
 
-    sendFirstAccountMail(user).then(() => {
-      console.log("Mail sent...!");
-    });
+    // sendFirstAccountMail(user).then(() => {
+    //   console.log("Mail sent...!");
+    // });
 
     return res.status(HTTP.CREATE).json({
       message: "Registered user",
       data: user,
-      token,
     });
   } catch (error: any) {
-    return res.status(HTTP.CREATE).json({
+    return res.status(HTTP.BAD).json({
       message: "error registering user",
       data: error.message,
     });
@@ -93,8 +91,7 @@ export const signInUser = async (req: Request, res: Response) => {
             { id: user?._id, email: user?.email },
             "token"
           );
-
-          return res.status(HTTP.CREATE).json({
+          return res.status(HTTP.OK).json({
             message: "Welcome Back",
             data: token,
           });
