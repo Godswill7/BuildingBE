@@ -9,6 +9,9 @@ const agentModel = new Schema<iAgentData>(
     },
     email: {
       type: String,
+      trim: true,
+      unique: true,
+      required: true,
     },
     password: {
       type: String,

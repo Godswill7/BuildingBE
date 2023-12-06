@@ -9,6 +9,8 @@ const ownerSchema = new Schema<iOwnerData>(
     },
     email: {
       type: String,
+      trim: true,
+      unique: true,
       required: true,
     },
     password: {

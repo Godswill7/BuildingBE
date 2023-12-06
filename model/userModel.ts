@@ -9,6 +9,9 @@ const userModel = new Schema<iUserData>(
     },
     email: {
       type: String,
+      trim: true,
+      unique: true,
+      required:true,
     },
     password: {
       type: String,
@@ -27,7 +30,7 @@ const userModel = new Schema<iUserData>(
     },
     premium: {
       type: Boolean,
-      default:false
+      default: false,
     },
   },
   {

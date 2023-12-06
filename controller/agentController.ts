@@ -1,52 +1,49 @@
-import { HTTP } from "../Error/mainError";
-import authModel from "../model/userModel";
-import bcrypt from "bcrypt";
+import  jwt from 'jsonwebtoken';
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import { HTTP } from "../Error/mainError";
+import agentModel from "../model/agentModel";
+import bcrypt from "bcrypt";
 import crypto from "crypto";
-import {sendFirstAccountMail} from "../utils/email";
 
-export const registerUser = async (
+export const registerAgent = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
     const value = crypto.randomBytes(10).toString("hex");
 
-    const user = await authModel.create({
+    const agent = await agentModel.create({
+      name,
       email,
       password: hashed,
       token: value,
       image: email.charAt[0],
     });
 
-    // sendFirstAccountMail(user).then(() => {
-    //   console.log("Mail sent...!");
-    // });
     return res.status(HTTP.CREATE).json({
-      message: "User registered Successfully",
-      data: user,
+      message: "Agent created successfully",
+      data: agent,
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error registering user",
+      message: "Error creating agent",
       data: error.message,
     });
   }
 };
 
-export const verifyUser = async (
+export const verifyAgent = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
     const { token } = req.params;
 
-    const getUserID: any = jwt.verify(
+    const getAgentID: any = jwt.verify(
       token,
       "token",
       (err: any, payload: any) => {
@@ -58,9 +55,8 @@ export const verifyUser = async (
       }
     );
 
-
-    const user = await authModel.findByIdAndUpdate(
-      getUserID.id,
+    const user = await agentModel.findByIdAndUpdate(
+      getAgentID.id,
       {
         token: "",
         verified: true,
@@ -69,29 +65,29 @@ export const verifyUser = async (
     );
 
     return res.status(HTTP.OK).json({
-      message: "verified user",
+      message: "verified agent",
       data: user,
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error verifying user",
+      message: "error verifying agent",
       data: error.message,
     });
   }
 };
 
-export const signInUser = async (req: Request, res: Response) => {
+export const signInAgent = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { email, password } = req.body;
 
-    const user = await authModel.findOne({ email });
-    
-    if (user) {
-      const checkPassword = await bcrypt.compare(password, user.password);
+    const agent = await agentModel.findOne({ email });
+
+    if (agent) {
+      const checkPassword = await bcrypt.compare(password, agent.password);
       if (checkPassword) {
-        if (user.verified && user.token === "") {
+        if (agent.verified && agent.token === "") {
           const token = jwt.sign(
-            { id: user?._id, email: user?.email },
+            { id: agent?._id, email: agent?.email },
             "token"
           );
           return res.status(HTTP.OK).json({
@@ -100,7 +96,7 @@ export const signInUser = async (req: Request, res: Response) => {
           });
         } else {
           return res.status(HTTP.BAD).json({
-            message: "user haven't been verified",
+            message: "agent haven't been verified",
           });
         }
       } else {
@@ -110,67 +106,67 @@ export const signInUser = async (req: Request, res: Response) => {
       }
     } else {
       return res.status(HTTP.BAD).json({
-        message: "User is not found",
+        message: "agent is not found",
       });
     }
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error signing in user",
+      message: "error signing in agent",
       data: error.message,
     });
   }
 };
 
-export const deleteUser = async (
+export const deleteAgent = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const { userID } = req.params;
+    const { agentID } = req.params;
 
-    await authModel.findByIdAndDelete(userID);
+    await agentModel.findByIdAndDelete(agentID);
 
     return res.status(HTTP.DELETE).json({
-      message: "User Deleted",
+      message: "Agent Deleted",
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error deleting user",
+      message: "error deleting Agent",
       data: error.message,
     });
   }
 };
 
-export const viewAllUser = async (req: Request, res: Response) => {
+export const viewAllAgent = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const user = await authModel.find();
+    const agent = await agentModel.find();
 
     return res.status(HTTP.OK).json({
-      message: "viewing all user",
-      data: user,
+      message: "viewing all agents",
+      data: agent,
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error viewing all users",
+      message: "error viewing all Agents",
       data: error.message,
     });
   }
 };
 
-export const viewOneUser = async (req: Request, res: Response) => {
+export const viewOneAgent = async (req: Request, res: Response):Promise<Response> => {
   try {
-    const { userID } = req.params;
+    const { agentID } = req.params;
 
-    const user = await authModel.findById(userID);
+    const user = await agentModel.findById(agentID);
 
     return res.status(HTTP.OK).json({
-      message: "viewing one user",
+      message: "viewing one agent",
       data: user,
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error viewing one user",
+      message: "error viewing one agent",
       data: error.message,
-    });
-  }
+    });
+  }
 };
