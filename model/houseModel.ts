@@ -1,27 +1,28 @@
 import { Schema, model } from "mongoose";
 import { iHouseData } from "../config/interfaces";
 
-
-const houseModel = new Schema<iHouseData>({
+const houseModel = new Schema<iHouseData>(
+  {
     price: {
-        type: Number,
-        requred:true
+      type: Number,
+      requred: true,
     },
     location: {
-        type: String,
-        required:true
+      type: String,
+      required: true,
     },
     image: {
-        type: String,
+      type: String,
     },
     imageID: {
-        type: String,
+      type: String,
     },
     ownerID: {
-        type: String,
-    }
-},
-    {
-    timestamps:true
-    })
-export default model<iHouseData>("houses",houseModel)
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+export default model<iHouseData>("houses", houseModel);

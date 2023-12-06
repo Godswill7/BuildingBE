@@ -12,6 +12,7 @@ export const registerUser = async (
 ): Promise<Response> => {
   try {
     const { email, password } = req.body;
+
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
     const value = crypto.randomBytes(10).toString("hex");
@@ -22,13 +23,11 @@ export const registerUser = async (
       token: value,
     });
 
-
     // sendFirstAccountMail(user).then(() => {
     //   console.log("Mail sent...!");
     // });
-
     return res.status(HTTP.CREATE).json({
-      message: "Registered user",
+      message: "User registered Successfully",
       data: user,
     });
   } catch (error: any) {
@@ -82,7 +81,9 @@ export const verifyUser = async (
 export const signInUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+
     const user = await authModel.findOne({ email });
+    
     if (user) {
       const checkPassword = await bcrypt.compare(password, user.password);
       if (checkPassword) {
@@ -127,8 +128,8 @@ export const deleteUser = async (
 
     await authModel.findByIdAndDelete(userID);
 
-    return res.status(HTTP.CREATE).json({
-      message: "Deleted",
+    return res.status(HTTP.DELETE).json({
+      message: "User Deleted",
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
