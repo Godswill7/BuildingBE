@@ -25,6 +25,10 @@ const userModel = new Schema<iUserData>(
     token: {
       type: String,
     },
+    premium: {
+      type: Boolean,
+      default:false
+    },
   },
   {
     timestamps: true,
