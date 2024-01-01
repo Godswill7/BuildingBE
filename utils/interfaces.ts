@@ -1,7 +1,7 @@
 import { Document } from "mongoose";
 
 interface iUser {
-  name: string;
+  userName: string;
   email: string;
   password: string;
   image: string;
@@ -9,26 +9,34 @@ interface iUser {
   verified: boolean;
   token: string;
   premium: boolean;
+  role: string;
+  history: {}[];
 }
 
 interface iAgent {
-  name: string;
+  userName: string;
   email: string;
   password: string;
   image: string;
   imageID: string;
   verified: boolean;
   token: string;
+  rating: number;
+  ratings: number[];
+  role: string;
+  history: {}[];
 }
 
 interface iOwner {
-  name: string;
+  userName: string;
   email: string;
   password: string;
   image: string;
   imageID: string;
   verified: boolean;
+  role: string;
   houses: {}[];
+  history: {}[];
 }
 
 interface iHouse {
@@ -37,6 +45,7 @@ interface iHouse {
   image: string;
   imageID: string;
   ownerID: string;
+  agentID: string;
 }
 
 export interface iHouseData extends iHouse, Document {}

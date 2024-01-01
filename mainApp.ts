@@ -1,5 +1,11 @@
 import cors from "cors";
-import express, { Application, NextFunction, Request, Response } from "express";
+import {
+  Application,
+  NextFunction,
+  Request,
+  Response,
+  json,
+} from "express";
 import user from "./router/userRouter";
 import agent from "./router/agentRouter";
 import { HTTP } from "./Error/mainError";
@@ -9,7 +15,7 @@ import { errorHandler } from "./Error/errorHandler";
 import {mainError} from "./Error/mainError"
 
 export const mainApp = (app: Application) => {
-  app.use(express.json());
+  app.use(json());
   app.use(cors());
   app.use(morgan("dev"));
     app.use(helmet());
@@ -20,7 +26,7 @@ export const mainApp = (app: Application) => {
   app.get("/",(req: Request, res: Response) => {
     try {
      return res.status(HTTP.OK).json({
-        message: "Welcome Home",
+        message: "Welcome to Wisdom Property API",
       });
     } catch (error:any) {
       return res.status(HTTP.BAD).json({

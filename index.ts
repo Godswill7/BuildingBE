@@ -9,7 +9,8 @@ const app: Application = express();
 
 mainApp(app);
 
-const server = app.listen(process.env.PORT || port, () => {
+const server = app.listen(process.env.PORT! || port, () => {
+  console.log()
   dbConnect();
 }); 
 process.on("uncaughtException", (error: Error) => {

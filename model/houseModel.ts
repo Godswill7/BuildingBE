@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { iHouseData } from "../config/interfaces";
+import { iHouseData } from "../utils/interfaces";
 
 const houseModel = new Schema<iHouseData>(
   {

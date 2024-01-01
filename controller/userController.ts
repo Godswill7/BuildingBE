@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import {sendFirstAccountMail} from "../utils/email";
 
-export const registerUser = async (
+export const  registerUser = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
@@ -15,13 +15,13 @@ export const registerUser = async (
 
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
-    const value = crypto.randomBytes(10).toString("hex");
+
+    const value = crypto.randomBytes(2).toString("hex");
 
     const user = await authModel.create({
       email,
       password: hashed,
       token: value,
-      image: email.charAt[0],
     });
 
     // sendFirstAccountMail(user).then(() => {
@@ -45,10 +45,11 @@ export const verifyUser = async (
 ): Promise<Response> => {
   try {
     const { token } = req.params;
+    console.log(token)
 
     const getUserID: any = jwt.verify(
       token,
-      "token",
+      "code",
       (err: any, payload: any) => {
         if (err) {
           return err;
@@ -57,6 +58,7 @@ export const verifyUser = async (
         }
       }
     );
+    console.log(getUserID)
 
 
     const user = await authModel.findByIdAndUpdate(

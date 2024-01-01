@@ -3,7 +3,7 @@ import { deleteUser, registerUser, signInUser, verifyUser, viewAllUser, viewOneU
 
 const router = Router();
 
-router.route("/create").post(registerUser);
+router.route("/create-user").post(registerUser);
 router.route("/sign-in").post(signInUser);
 router.route("/:token/verify").patch(verifyUser);
 router.route("/:userID/delete").delete(deleteUser);

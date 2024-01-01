@@ -1,9 +1,9 @@
 import { Schema, Types, model } from "mongoose";
-import { iOwnerData } from "../config/interfaces";
+import { iOwnerData } from "../utils/interfaces";
 
 const ownerSchema = new Schema<iOwnerData>(
   {
-    name: {
+    userName: {
       type: String,
       required: true,
     },
@@ -27,7 +27,16 @@ const ownerSchema = new Schema<iOwnerData>(
       type: Boolean,
       default: false,
     },
+    role: {
+      type: String,
+    },
     houses: [
+      {
+        type: Types.ObjectId,
+        ref: "houses",
+      },
+    ],
+    history: [
       {
         type: Types.ObjectId,
         ref: "houses",

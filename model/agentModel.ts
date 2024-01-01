@@ -1,11 +1,12 @@
-import { Schema, model } from "mongoose";
-import { iAgentData } from "../config/interfaces";
+import { Schema, Types, model } from "mongoose";
+import { iAgentData } from "../utils/interfaces";
 
 
 const agentModel = new Schema<iAgentData>(
   {
-    name: {
+    userName: {
       type: String,
+      required: true,
     },
     email: {
       type: String,
@@ -15,6 +16,7 @@ const agentModel = new Schema<iAgentData>(
     },
     password: {
       type: String,
+      required: true,
     },
     image: {
       type: String,
@@ -28,6 +30,20 @@ const agentModel = new Schema<iAgentData>(
     token: {
       type: String,
     },
+    role: {
+      type: String,
+    },
+    rating: {
+      type: Number,
+    },
+    ratings: {
+      type: [Number],
+    },
+    history: [
+      {
+        type: Types.ObjectId,
+      },
+    ],
   },
   {
     timestamps: true,
