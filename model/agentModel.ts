@@ -1,7 +1,6 @@
 import { Schema, Types, model } from "mongoose";
 import { iAgentData } from "../utils/interfaces";
 
-
 const agentModel = new Schema<iAgentData>(
   {
     userName: {
@@ -36,9 +35,11 @@ const agentModel = new Schema<iAgentData>(
     rating: {
       type: Number,
     },
-    ratings: {
-      type: [Number],
-    },
+    ratings: [
+      {
+        type: Number,
+      },
+    ],
     history: [
       {
         type: Types.ObjectId,

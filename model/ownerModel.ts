@@ -23,6 +23,9 @@ const ownerSchema = new Schema<iOwnerData>(
     imageID: {
       type: String,
     },
+    token: {
+      type: String,
+    },
     verified: {
       type: Boolean,
       default: false,

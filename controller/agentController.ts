@@ -1,27 +1,28 @@
-import  jwt from 'jsonwebtoken';
 import { Request, Response } from "express";
-import { HTTP } from "../Error/mainError";
 import agentModel from "../model/agentModel";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { HTTP } from "../utils/interfaces";
+import { Role } from "../utils/role";
 
 export const registerAgent = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const { name, email, password } = req.body;
+    const { userName, email, password } = req.body;
 
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
     const value = crypto.randomBytes(10).toString("hex");
 
     const agent = await agentModel.create({
-      name,
+      userName,
       email,
       password: hashed,
       token: value,
-      image: email.charAt[0],
+      image: email.charAt(0),
+      role:Role.AGENT
     });
 
     return res.status(HTTP.CREATE).json({
@@ -41,33 +42,35 @@ export const verifyAgent = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { token } = req.params;
+    const { agentID, token } = req.params;
 
-    const getAgentID: any = jwt.verify(
-      token,
-      "token",
-      (err: any, payload: any) => {
-        if (err) {
-          return err;
-        } else {
-          return payload;
-        }
+    const getAgent = await agentModel.findById(agentID);
+
+    if (getAgent) {
+      if (getAgent.token === token) {
+        await agentModel.findByIdAndUpdate(
+          getAgent,
+          {
+            token: "",
+            verified: true,
+          },
+          { new: true }
+        );
+        return res.status(HTTP.OK).json({
+          message: "Agent verification successfull",
+          data: getAgent,
+        });
+      } else {
+        return res.status(HTTP.BAD).json({
+          message: "Incorrect Password / Invalid password",
+          data: getAgent,
+        });
       }
-    );
-
-    const user = await agentModel.findByIdAndUpdate(
-      getAgentID.id,
-      {
-        token: "",
-        verified: true,
-      },
-      { new: true }
-    );
-
-    return res.status(HTTP.OK).json({
-      message: "verified agent",
-      data: user,
-    });
+    } else {
+      return res.status(HTTP.BAD).json({
+        message: "Agent does not exist",
+      });
+    }
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
       message: "error verifying agent",
@@ -76,7 +79,10 @@ export const verifyAgent = async (
   }
 };
 
-export const signInAgent = async (req: Request, res: Response): Promise<Response> => {
+export const signInAgent = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const { email, password } = req.body;
 
@@ -86,13 +92,8 @@ export const signInAgent = async (req: Request, res: Response): Promise<Response
       const checkPassword = await bcrypt.compare(password, agent.password);
       if (checkPassword) {
         if (agent.verified && agent.token === "") {
-          const token = jwt.sign(
-            { id: agent?._id, email: agent?.email },
-            "token"
-          );
           return res.status(HTTP.OK).json({
-            message: "Welcome Back",
-            data: token,
+            message: `Welcome Back Agent ${agent.userName}`,
           });
         } else {
           return res.status(HTTP.BAD).json({
@@ -137,7 +138,10 @@ export const deleteAgent = async (
   }
 };
 
-export const viewAllAgent = async (req: Request, res: Response): Promise<Response> => {
+export const viewAllAgent = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const agent = await agentModel.find();
 
@@ -153,15 +157,18 @@ export const viewAllAgent = async (req: Request, res: Response): Promise<Respons
   }
 };
 
-export const viewOneAgent = async (req: Request, res: Response):Promise<Response> => {
+export const viewOneAgent = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const { agentID } = req.params;
 
-    const user = await agentModel.findById(agentID);
+    const findOneAgent = await agentModel.findById(agentID);
 
     return res.status(HTTP.OK).json({
       message: "viewing one agent",
-      data: user,
+      data: findOneAgent,
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({

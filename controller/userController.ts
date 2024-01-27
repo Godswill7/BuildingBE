@@ -1,32 +1,38 @@
-import { HTTP } from "../Error/mainError";
 import authModel from "../model/userModel";
-import bcrypt from "bcrypt";
+import { compare, genSalt, hash } from "bcrypt";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
-import {sendFirstAccountMail} from "../utils/email";
+import { randomBytes } from "crypto";
+import { sendAccountMail, sendFirstAccountMail } from "../utils/email";
+import { HTTP } from "../utils/interfaces";
+import userModel from "../model/userModel";
+import { Role } from "../utils/role";
 
-export const  registerUser = async (
+export const registerUser = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const { email, password } = req.body;
+    const { userName, email,password } = req.body;
 
-    const salt = await bcrypt.genSalt(10);
-    const hashed = await bcrypt.hash(password, salt);
+    const salt = await genSalt(10);
+    const hashed = await hash(password, salt);
 
-    const value = crypto.randomBytes(2).toString("hex");
+    const token = randomBytes(2).toString("hex");
 
     const user = await authModel.create({
+      userName,
       email,
-      password: hashed,
-      token: value,
+      password:hashed,
+      token,
+      image: email.charAt(0),
+      role:Role.USER
     });
 
-    // sendFirstAccountMail(user).then(() => {
-    //   console.log("Mail sent...!");
-    // });
+    sendFirstAccountMail(user).then(() => {
+      console.log("Mail sent...!");
+    });
+
     return res.status(HTTP.CREATE).json({
       message: "User registered Successfully",
       data: user,
@@ -44,39 +50,38 @@ export const verifyUser = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { token } = req.params;
-    console.log(token)
+    const { userID, token } = req.params;
 
-    const getUserID: any = jwt.verify(
-      token,
-      "code",
-      (err: any, payload: any) => {
-        if (err) {
-          return err;
-        } else {
-          return payload;
-        }
-      }
-    );
-    console.log(getUserID)
+    const getUser = await userModel.findById(userID);
 
+    if (getUser) {
+     if (getUser.token === token) {
+       const user = await authModel.findByIdAndUpdate(
+         getUser,
+         {
+           token: "",
+           verified: true,
+         },
+         { new: true }
+       );
 
-    const user = await authModel.findByIdAndUpdate(
-      getUserID.id,
-      {
-        token: "",
-        verified: true,
-      },
-      { new: true }
-    );
-
-    return res.status(HTTP.OK).json({
-      message: "verified user",
-      data: user,
-    });
+       return res.status(HTTP.UPDATE).json({
+         message: "Verified User Succesfull",
+         data: user,
+       });
+     } else {
+       return res.status(HTTP.BAD).json({
+         message: "Invalid Token",
+       });
+     }
+    } else {
+      return res.status(HTTP.BAD).json({
+        message: "User Not Found",
+      });
+    }
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error verifying user",
+      message: "Error Verifying User | User Verification Failed",
       data: error.message,
     });
   }
@@ -87,37 +92,33 @@ export const signInUser = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     const user = await authModel.findOne({ email });
-    
+
     if (user) {
-      const checkPassword = await bcrypt.compare(password, user.password);
+      const checkPassword = await compare(password, user.password);
       if (checkPassword) {
         if (user.verified && user.token === "") {
-          const token = jwt.sign(
-            { id: user?._id, email: user?.email },
-            "token"
-          );
           return res.status(HTTP.OK).json({
             message: "Welcome Back",
-            data: token,
+            data: user,
           });
         } else {
           return res.status(HTTP.BAD).json({
-            message: "user haven't been verified",
+            message: "User Has Not Been verified",
           });
         }
       } else {
         return res.status(HTTP.BAD).json({
-          message: "Password is incorrect",
+          message: "Password is Incorrect",
         });
       }
     } else {
       return res.status(HTTP.BAD).json({
-        message: "User is not found",
+        message: "User Is Not Found",
       });
     }
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error signing in user",
+      message: "Error Signing In User",
       data: error.message,
     });
   }
@@ -137,7 +138,7 @@ export const deleteUser = async (
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error deleting user",
+      message: "Error Deleting User",
       data: error.message,
     });
   }
@@ -145,15 +146,22 @@ export const deleteUser = async (
 
 export const viewAllUser = async (req: Request, res: Response) => {
   try {
-    const user = await authModel.find();
+    const user = await authModel.find().populate({
+      path: "users",
+      options: {
+        sort: {
+          createdAt: -1,
+        },
+      },
+    });;
 
     return res.status(HTTP.OK).json({
-      message: "viewing all user",
+      message: "Viewing All User",
       data: user,
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error viewing all users",
+      message: "Error Viewing All Users",
       data: error.message,
     });
   }
@@ -166,13 +174,13 @@ export const viewOneUser = async (req: Request, res: Response) => {
     const user = await authModel.findById(userID);
 
     return res.status(HTTP.OK).json({
-      message: "viewing one user",
+      message: "Viewing One User",
       data: user,
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
-      message: "error viewing one user",
+      message: "Error Viewing One User",
       data: error.message,
-    });
-  }
+    });
+  }
 };

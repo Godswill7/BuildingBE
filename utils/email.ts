@@ -7,12 +7,12 @@ import env from "dotenv";
 env.config();
 
 const GOOGLE_ID =
-  "72356347044-qj7re6pj9lc6onng45o5f6s6k9qk9q67.apps.googleusercontent.com";
-const GOOGLE_SECRET = "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";
+  "350112565242-4qn4bpqq2k9cts6mqs7ig1r55c38q83r.apps.googleusercontent.com";
+const GOOGLE_SECRET = "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";
 const GOOGLE_REFRESH_TOKEN =
-  "1//04bvw-58jDJqbCgYIARAAGAQSNwF-L9IrqMkUVudZc-hQ0eT5zPqpyt57Q6TgAnl25j3sVZcuJIMetAENeundPQHMkUWZ-Nqj984";
+  "1//04qqJUlI9iAtWCgYIARAAGAQSNwF-L9IrmX1rqA0KFMphKTzV60NxqDifoc7kkPiZ7QTWmkbKN10Fb9fXFvCcvvnd3q-Ro2uHx_4";
 const GOOGLE_URL = "https://developers.google.com/oauthplayground";
-// import file from "../views/index.ejs"
+
 const oAuth = new google.auth.OAuth2(GOOGLE_ID, GOOGLE_SECRET, GOOGLE_URL);
 oAuth.setCredentials({ access_token: GOOGLE_REFRESH_TOKEN });
 
@@ -24,7 +24,7 @@ export const sendAccountMail = async (user: any) => {
       service: "gmail",
       auth: {
         type: "OAuth2",
-        user: "eumeh3882@gmail.com",
+        user: "udidagodswill7@gmail.com",
         clientId: GOOGLE_ID,
         clientSecret: GOOGLE_SECRET,
         refreshToken: GOOGLE_REFRESH_TOKEN,
@@ -42,15 +42,15 @@ export const sendAccountMail = async (user: any) => {
     const data = await ejs.renderFile(readData, passedData);
 
     const mailer = {
-      from: " <eumeh3882@gmail.com> ",
+      from: " <udidagodswill7@gmail.com> ",
       to: user.email,
-      subject: " dirt2school",
+      subject: " HousingApi",
       html: data,
     };
 
     transport.sendMail(mailer);
-  } catch (error) {
-    console.log(error);
+  } catch (error:any) {
+    console.log(error.message);
   }
 };
 
@@ -62,7 +62,7 @@ export const resetAccountPassword = async (user: any) => {
       service: "gmail",
       auth: {
         type: "OAuth2",
-        user: "eumeh3882@gmail.com",
+        user: "udidagodswill7@gmail.com",
         clientId: GOOGLE_ID,
         clientSecret: GOOGLE_SECRET,
         refreshToken: GOOGLE_REFRESH_TOKEN,
@@ -80,15 +80,15 @@ export const resetAccountPassword = async (user: any) => {
     const data = await ejs.renderFile(readData, passedData);
 
     const mailer = {
-      from: " <eumeh3882@gmail.com > ",
+      from: " <udidagodswill7@gmail.com > ",
       to: user.email,
       subject: "Welcome you can now reset your password",
       html: data,
     };
 
     transport.sendMail(mailer);
-  } catch (error) {
-    console.log(error);
+  } catch (error:any) {
+    console.log(error.message);
   }
 };
 
@@ -100,7 +100,7 @@ export const sendFirstAccountMail = async (student: any) => {
       service: "gmail",
       auth: {
         type: "OAuth2",
-        user: "eumeh3882@gmail.com",
+        user: "udidagodswill7@gmail.com",
         clientId: GOOGLE_ID,
         clientSecret: GOOGLE_SECRET,
         refreshToken: GOOGLE_REFRESH_TOKEN,
@@ -109,25 +109,26 @@ export const sendFirstAccountMail = async (student: any) => {
     });
 
     const token = jwt.sign({ id: student._id }, process.env.SECRET!);
+    const token1 = jwt.sign({ id: student._id }, "code");
 
     const passedData = {
-      url: `http://localhost:3783/api/${token}/student-secret-key`,
+      url: `http://localhost:3783/api/${token}/student-secret-key`, 
       code: student?.secretKey,
     };
 
-    const readData = path.join(__dirname, "../views/studentOTP.ejs");
+    const readData = path.join(__dirname, "../views/first.ejs");
     const data = await ejs.renderFile(readData, passedData);
 
     const mailer = {
-      from: " <eumeh3882@gmail.com> ",
+      from: " <udidagodswill7@gmail.com> ",
       to: student.email,
-      subject: "dirt2school",
+      subject: "HousingApi",
       html: data,
     };
 
     transport.sendMail(mailer);
-  } catch (error) {
-    console.log(error);
+  } catch (error:any) {
+    console.log(error.message);
   }
 };
 
