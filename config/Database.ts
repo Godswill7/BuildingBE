@@ -1,5 +1,8 @@
 import { connect } from "mongoose";
 import dotenv from "dotenv";
+import { HTTP } from "../utils/interfaces";
+
+
 dotenv.config();
 
 const dbString: string = process.env.DB_STRING!;

@@ -26,11 +26,13 @@ export const mainApp = (app: Application) => {
     try {
       return res.status(HTTP.OK).json({
         message: "Welcome to Wisdom Property API",
+        status:HTTP.OK
       });
     } catch (error: any) {
       return res.status(HTTP.BAD).json({
         message: "Root Error",
         data: error.message,
+        status:HTTP.BAD
       });
     }
   });

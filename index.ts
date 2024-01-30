@@ -1,5 +1,5 @@
 import { dbConnect } from "./config/Database";
-import express, { Application } from "express";
+import express, { Application, request, response } from "express";
 import env from "dotenv";
 import { mainApp } from "./mainApp";
 env.config();
@@ -8,6 +8,7 @@ const port = parseInt(process.env.PORT!);
 const app: Application = express();
 
 mainApp(app);
+
 
 const server = app.listen(process.env.PORT! || port, () => {
   console.log()

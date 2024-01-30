@@ -36,6 +36,7 @@ export const registerUser = async (
     return res.status(HTTP.CREATE).json({
       message: "User registered Successfully",
       data: user,
+      status:HTTP.CREATE
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
@@ -68,21 +69,25 @@ export const verifyUser = async (
        return res.status(HTTP.UPDATE).json({
          message: "Verified User Succesfull",
          data: user,
+         status:HTTP.UPDATE
        });
      } else {
        return res.status(HTTP.BAD).json({
          message: "Invalid Token",
+         status:HTTP.BAD
        });
      }
     } else {
       return res.status(HTTP.BAD).json({
         message: "User Not Found",
+        status: HTTP.BAD,
       });
     }
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
       message: "Error Verifying User | User Verification Failed",
       data: error.message,
+      status: HTTP.BAD,
     });
   }
 };
@@ -135,11 +140,13 @@ export const deleteUser = async (
 
     return res.status(HTTP.DELETE).json({
       message: "User Deleted",
+      status:HTTP.DELETE
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
       message: "Error Deleting User",
       data: error.message,
+      status: HTTP.BAD
     });
   }
 };
@@ -158,11 +165,13 @@ export const viewAllUser = async (req: Request, res: Response) => {
     return res.status(HTTP.OK).json({
       message: "Viewing All User",
       data: user,
+      status: HTTP.OK,
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
       message: "Error Viewing All Users",
       data: error.message,
+      status: HTTP.BAD
     });
   }
 };
