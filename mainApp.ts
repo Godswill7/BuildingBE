@@ -9,6 +9,7 @@ import user from "./router/userRouter";
 import agent from "./router/agentRouter";
 
 export const mainApp = (app: Application) => {
+  
   app.use(json());
   app.use(
     cors({
@@ -25,7 +26,7 @@ export const mainApp = (app: Application) => {
   app.get("/", (req: Request, res: Response) => {
     try {
       return res.status(HTTP.OK).json({
-        message: "Welcome to Wisdom Property API",
+        message: "Welcome to Building Property API",
         status:HTTP.OK
       });
     } catch (error: any) {
@@ -36,13 +37,14 @@ export const mainApp = (app: Application) => {
       });
     }
   });
+
   app.all("*", (req: Request, res: Response, next: NextFunction) => {
     next(
       new mainError({
         name: "Route Error",
         message: `This Route: ${req.originalUrl} does not exist`,
-        status: HTTP.BAD,
         success: false,
+        status: HTTP.BAD,
       })
     );
   });

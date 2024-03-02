@@ -22,17 +22,19 @@ export const registerAgent = async (
       password: hashed,
       token: value,
       image: email.charAt(0),
-      role:Role.AGENT
+      role: Role.AGENT,
     });
 
     return res.status(HTTP.CREATE).json({
       message: "Agent created successfully",
       data: agent,
+      status:HTTP.CREATE,
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
       message: "Error creating agent",
       data: error.message,
+      status:HTTP.BAD,
     });
   }
 };
@@ -46,31 +48,31 @@ export const verifyAgent = async (
 
     const getAgent = await agentModel.findById(agentID);
 
-    if (getAgent) {
-      if (getAgent.token === token) {
-        await agentModel.findByIdAndUpdate(
-          getAgent,
-          {
-            token: "",
-            verified: true,
-          },
-          { new: true }
-        );
-        return res.status(HTTP.OK).json({
-          message: "Agent verification successfull",
-          data: getAgent,
-        });
-      } else {
-        return res.status(HTTP.BAD).json({
-          message: "Incorrect Password / Invalid password",
-          data: getAgent,
-        });
-      }
-    } else {
+    if (!getAgent) {
       return res.status(HTTP.BAD).json({
         message: "Agent does not exist",
       });
     }
+
+    if (getAgent.token === token) {
+      return res.status(HTTP.BAD).json({
+        message: "Incorrect Token / Invalid Token",
+        data: getAgent,
+      });
+    }
+
+    await agentModel.findByIdAndUpdate(
+      getAgent,
+      {
+        token: "",
+        verified: true,
+      },
+      { new: true }
+    );
+    return res.status(HTTP.OK).json({
+      message: "Agent verification successfull",
+      data: getAgent,
+    });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
       message: "error verifying agent",
@@ -88,32 +90,37 @@ export const signInAgent = async (
 
     const agent = await agentModel.findOne({ email });
 
-    if (agent) {
-      const checkPassword = await bcrypt.compare(password, agent.password);
-      if (checkPassword) {
-        if (agent.verified && agent.token === "") {
-          return res.status(HTTP.OK).json({
-            message: `Welcome Back Agent ${agent.userName}`,
-          });
-        } else {
-          return res.status(HTTP.BAD).json({
-            message: "agent haven't been verified",
-          });
-        }
-      } else {
-        return res.status(HTTP.BAD).json({
-          message: "Password is incorrect",
-        });
-      }
-    } else {
+    if (!agent) {
       return res.status(HTTP.BAD).json({
         message: "agent is not found",
+        status: HTTP.BAD,
       });
     }
+    const checkPassword = await bcrypt.compare(password, agent.password);
+
+    if (!checkPassword) {
+      return res.status(HTTP.BAD).json({
+        message: "Password is incorrect",
+        status: HTTP.BAD,
+      });
+    }
+
+    if (agent.verified && agent.token === "") {
+      return res.status(HTTP.OK).json({
+        message: `Welcome Back Agent ${agent.userName}`,
+      });
+    } else {
+      return res.status(HTTP.BAD).json({
+        message: "agent haven't been verified",
+        status: HTTP.BAD,
+      });
+    };
+
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
       message: "error signing in agent",
       data: error.message,
+      status: HTTP.BAD,
     });
   }
 };
@@ -129,11 +136,13 @@ export const deleteAgent = async (
 
     return res.status(HTTP.DELETE).json({
       message: "Agent Deleted",
+      status:HTTP.DELETE
     });
   } catch (error: any) {
     return res.status(HTTP.BAD).json({
       message: "error deleting Agent",
       data: error.message,
+      status:HTTP.BAD,
     });
   }
 };
