@@ -7,7 +7,6 @@ import { sendAccountMail, sendFirstAccountMail } from "../utils/email";
 import { HTTP } from "../utils/interfaces";
 import userModel from "../model/userModel";
 import { Role } from "../utils/role";
-import { AnyExpression } from "mongoose";
 
 export const registerUser = async (
   req: Request,
