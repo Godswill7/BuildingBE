@@ -1,8 +1,9 @@
 import { connect } from "mongoose";
 import dotenv from "dotenv";
+import envElements from "./envElements";
 dotenv.config();
 
-const dbString: string = process.env.DB_STRING!;
+const dbString = envElements.databaseString;
 
 export const dbConnect = () => {
   try {
@@ -10,6 +11,6 @@ export const dbConnect = () => {
       console.log("Database Active 😎😋😊");
     });
   } catch (error: any) {
-    console.log("Error conecting db: ", error.message);
+    console.log(`Error conecting db: ${error.message}`);
   }
 };

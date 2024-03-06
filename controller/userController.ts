@@ -1,7 +1,7 @@
 import authModel from "../model/userModel";
 import { compare, genSalt, hash } from "bcrypt";
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { sign } from "jsonwebtoken";
 import { randomBytes } from "crypto";
 import { sendAccountMail, sendFirstAccountMail } from "../utils/email";
 import { HTTP } from "../utils/interfaces";
@@ -20,6 +20,7 @@ export const registerUser = async (
 
     const token = randomBytes(2).toString("hex");
 
+    
     const user = await authModel.create({
       userName,
       email,
@@ -29,9 +30,9 @@ export const registerUser = async (
       role: Role.USER,
     });
 
-    // sendFirstAccountMail(user).then(() => {
-    //   console.log("Mail sent...!");
-    // });
+    sendFirstAccountMail(user).then(() => {
+      console.log("Mail sent...!");
+    });
 
     return res.status(HTTP.CREATE).json({
       message: "User registered Successfully",
